@@ -24,7 +24,12 @@ function findFile(rootOfFile, arrayParametri, cb){
             string= data.toString().split( /\r\n/g);//regex la condizione.
             output= addLine(string,arrayParametri);
             cb(output);
-            convertFromStringToJSON(output);
+            var aggiungi=convertFromStringToJSON(output);
+            for(i in aggiungi){
+                var oggetto=aggiungi[i];
+                databse.addDocumentToDatabase(oggetto);
+            }
+
         })
     }
     else if (path.extname(rootOfFile)==".schema"){
@@ -78,20 +83,7 @@ function searchFileInDirectory(root){
         }
     })
 }
-/*    if (fs.lstatSync(path).isDirectory()){
- console.log("è una cartella");
- console.log(fs.readdirSync(path));
- fs.readdirSync(path).forEach(function (elem){
- searchFileInDirectory(path + "/" + elem);
- });
- }
- else{
- var output;
- findFile(path,output, function(giad){
- giad;
- });
- }
- };*/
+
 
 //splits the xml file in columns and needs to find the fields needed
 function findString(array) {
@@ -125,23 +117,8 @@ function addLine(arrayofString, fields){
         }
 
         output.push(row);
+        databse.addDocumentToDatabase(row);
     }
-
-
-    /*
-    arrayofString=arrayofString.toString().split("\t");
-    k=0;
-    for(j in arrayofString){
-        if(k= 11){
-            k=0;
-        }
-        else{
-            temp.push(arrayofString[j]+ " k="+k);
-            console.log(j);
-            console.log(k);
-            k++;
-        }}*/
-
     return output;
 };
 
@@ -150,11 +127,14 @@ function convertFromStringToJSON(string){
     stringForMongo = JSON.stringify(string);
     console.log(stringForMongo);
     console.log("\n");
+    return stringForMongo;
+
 };
 
 
-
-searchFileInDirectory(root2);
 databse.connectDatabase();
+databse.createSchema();
+searchFileInDirectory(root2);
+
 
 
