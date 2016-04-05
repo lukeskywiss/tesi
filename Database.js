@@ -9,11 +9,18 @@ module.exports=
 {
 //Establishes a connection to the Database
     connectDatabase: function(){
-        mongoose.connect('mongodb://localhost/test');
+       /* mongoose.connect('mongodb://localhost');
         var db = mongoose.connection;
         db.on('error', console.error.bind(console, 'connection error:'));
         db.once('open', function () {
             console.log("you are connected to the database, you can now do everything you want");
+        });*/
+
+        var mongoURI = "mongodb://localhost/test";
+        var MongoDB = mongoose.connect(mongoURI).connection;
+        MongoDB.on('error', function(err) { console.log(err.message); });
+        MongoDB.once('open', function() {
+            console.log("mongodb connection open");
         });
     },
 
@@ -53,10 +60,12 @@ module.exports=
         var gen= new Genome(row);
 
         gen.save(function(error, gen){
+            console.log("aggiunto");
             if(error)
                 res.json(error);
             else
                 res.json(gen);
+
         })
     },
 }

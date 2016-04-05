@@ -5,7 +5,12 @@
 var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
+var mongoose = require('mongoose');
 var root2= "bed";
+require('./Genome.js')();
+var async = require('async');
+
+var Genome = mongoose.model('Genome');
 
 //Find file in a Directory and in output show the file text
 function findFile(rootOfFile, arrayParametri, cb){
@@ -25,12 +30,20 @@ function findFile(rootOfFile, arrayParametri, cb){
             output= addLine(string,arrayParametri);
             cb(output);
             var aggiungi=convertFromStringToJSON(output);
-            for(i in aggiungi){
-                var oggetto=aggiungi[i];
-                databse.addDocumentToDatabase(oggetto);
-            }
 
-        })
+            /*            mongoose.connect('mongodb://localhost/genome', function(err) {
+             if (err) throw err;
+
+             async.each(aggiungi, function(item, cb) {
+             Genome.create(item, cb);
+             }, function(err) {
+             if (err) {
+             // handle error
+             }
+             });
+
+             });*/
+        });
     }
     else if (path.extname(rootOfFile)==".schema"){
         console.log("è il file header da cui prendere i campi!!!");
@@ -115,10 +128,19 @@ function addLine(arrayofString, fields){
         for (var i = 0; i < fields.length; i ++){
             row["" + fields[i]] = temp[i];
         }
-
         output.push(row);
-        databse.addDocumentToDatabase(row);
+
+        // databse.addDocumentToDatabase(row);
     }
+
+    async.each(output, function(item, cb) {
+        Genome.create(item, cb);
+    }, function(err) {
+        if (err) {
+            console.log("PORCODIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        }
+    });
+
     return output;
 };
 
@@ -126,15 +148,20 @@ function addLine(arrayofString, fields){
 function convertFromStringToJSON(string){
     stringForMongo = JSON.stringify(string);
     console.log(stringForMongo);
+    /*
+     mongoose.connect('mongodb://localhost/genome', function(err) {
+     if (err) throw err;
+     */
+
     console.log("\n");
     return stringForMongo;
 
 };
 
 
+
 databse.connectDatabase();
-databse.createSchema();
-searchFileInDirectory(root2);
+    searchFileInDirectory(root2);
 
 
 
