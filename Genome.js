@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 module.exports = function() {
     // define schema
     var GenomeSchema = new Schema({
-        "char": String,
+        "chr": String,
         "start": String,
         "end": String,
         "strand": String,
