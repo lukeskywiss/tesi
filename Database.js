@@ -27,7 +27,7 @@ module.exports=
 
     //creats a Schema with the 3 standards fields,
     // the other fields that change every time are added anyway
-
+/*
     createSchema: function() {
         var Schema = mongoose.Schema;
         var Genome = new Schema({
@@ -67,6 +67,6 @@ module.exports=
                 res.json(gen);
 
         })
-    },
+    },*/
 }
 //exports function for the databse

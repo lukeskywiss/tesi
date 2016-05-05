@@ -8,9 +8,15 @@ var databse = require('./Database');
 var mongoose = require('mongoose');
 var root2= "bed";
 require('./Genome.js')();
+require('./model/dnaseq.js')();
+require('./model/cnv.js')();
+require('./model/dnamethylation.js')();
+
 var async = require('async');
 
-var Genome = mongoose.model('Genome');
+var dnaseq = mongoose.model('dnaseq');
+var cnv = mongoose.model('cnv');
+var dnamethylation= mongoose.model('dnamethylation');
 
 //Find file in a Directory and in output show the file text
 function findFile(rootOfFile, arrayParametri, cb){
@@ -27,7 +33,7 @@ function findFile(rootOfFile, arrayParametri, cb){
             }
             //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
             string= data.toString().split( /\r\n/g);//regex la condizione.
-            output= addLine(string,arrayParametri);
+            output= addLine(string,arrayParametri, rootOfFile);
             cb(output);
             var aggiungi=convertFromStringToJSON(output);
 
@@ -117,7 +123,7 @@ function findString(array) {
 };
 
 //splits a string whenever it finds a \t arrayofString sono le righe del file
-function addLine(arrayofString, fields){
+function addLine(arrayofString, fields, typeofexperiment){
     var output= [];
 
     for(var j = 0; j < arrayofString.length - 1; j++){
@@ -134,10 +140,14 @@ function addLine(arrayofString, fields){
     }
 
     async.each(output, function(item, cb) {
-        Genome.create(item, cb);
+        if(typeofexperiment.indexOf("dnaseq")>-1) {
+            dnaseq.create(item, cb);
+        }else if(typeofexperiment.indexOf("cnv")>-1) {
+            cnv.create(item, cb);
+        }
     }, function(err) {
         if (err) {
-            console.log("PORCODIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            console.log("");
         }
     });
 
@@ -158,10 +168,13 @@ function convertFromStringToJSON(string){
 
 };
 
+function trovatipoesperimento(string){
+    string
 
+}
 
 databse.connectDatabase();
-    searchFileInDirectory(root2);
+searchFileInDirectory(root2);
 
 
 
