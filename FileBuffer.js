@@ -7,16 +7,39 @@ var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
 var root2= "bed";
+var async = require('async');
 require('./Genome.js')();
+
 require('./model/dnaseq.js')();
 require('./model/cnv.js')();
 require('./model/dnamethylation.js')();
+require('./model/mirnaseq/mirnaseqisoformquantification.js')();
+require('./model/mirnaseq/mirnaseqmirnaquantification.js')();
+require('./model/rnaseq/rnaseqexonquantification.js')();
+require('./model/rnaseq/rnaseqgenequantification.js')();
+require('./model/rnaseq/rnaseqspljxnquantification.js')();
+require('./model/rnaseqv2/rnaseqv2exonquantification.js')();
+require('./model/rnaseqv2/rnaseqv2genequantification.js')();
+require('./model/rnaseqv2/rnaseqv2isoformquantification.js')();
+require('./model/rnaseqv2/rnaseqv2spljxnquantification.js')();
 
-var async = require('async');
 
+
+//create all the model for the varius experiment
 var dnaseq = mongoose.model('dnaseq');
 var cnv = mongoose.model('cnv');
 var dnamethylation= mongoose.model('dnamethylation');
+var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification');
+var mirnaseqmirnaquantification = mongoose.model('mirnaseqmirnaquantification');
+var rnaseqexonquantification = mongoose.model('rnaseqexonquantification');
+var rnaseqgenequantification = mongoose.model('rnaseqgenequantification');
+var rnaseqspljxnquantification= mongoose.model('rnaseqspljxnquantification');
+var rnaseqv2exonquantification = mongoose.model('rnaseqv2exonquantification');
+var rnaseqv2genequantification = mongoose.model('rnaseqv2genequantification');
+var rnaseqv2isoformquantification = mongoose.model('rnaseqv2isoformquantification');
+var rnaseqv2spljxnquantification = mongoose.model('rnaseqv2spljxnquantification');
+
+
 
 //Find file in a Directory and in output show the file text
 function findFile(rootOfFile, arrayParametri, cb){
@@ -144,7 +167,26 @@ function addLine(arrayofString, fields, typeofexperiment){
             dnaseq.create(item, cb);
         }else if(typeofexperiment.indexOf("cnv")>-1) {
             cnv.create(item, cb);
+        }else if(typeofexperiment.indexOf("mirnaseq/isoform.quantification")>-1) {
+            mirnaseqisoformquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("mirnaseq/mirna.quantification")>-1) {
+            mirnaseqmirnaquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseq/exon.quantification")>-1) {
+            rnaseqexonquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseq/gene.quantification")>-1) {
+            rnaseqgenequantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseq/spljxn.quantification")>-1) {
+            rnaseqspljxnquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseqv2/exon.quantification")>-1) {
+            rnaseqv2exonquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseqv2/gene.quantification")>-1) {
+            rnaseqv2genequantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseqv2/isoform.quantification")>-1) {
+            rnaseqv2isoformquantification.create(item, cb);
+        }else if(typeofexperiment.indexOf("rnaseqv2/spljxn.quantification")>-1) {
+            rnaseqv2spljxnquantification.create(item, cb);
         }
+
     }, function(err) {
         if (err) {
             console.log("");

@@ -1,3 +1,6 @@
+/**
+ * Created by Luca on 05/04/2016.
+ */
 // import the necessary modules
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -5,15 +8,15 @@ var Schema = mongoose.Schema;
 // create an export function to encapsulate the model creation
 module.exports = function() {
     // define schema
-    var mirnaquantificationSchema = new Schema({
+    var dnamethylationSchema = new Schema({
         "chr": String,
         "start": String,
         "end": String,
         "strand": String,
-        "mirna_id": String,
-        "read_count" : Number,
-        "reads_per_million_miRNA_mapped": Number,
-        "cross-mapped": String
+        "composite_element_ref": String,
+        "beta_value": Number,
+        "gene_symbol": String
     });
-    mongoose.model('mirnaquantification', mirnaquantificationSchema);
+    mongoose.model('dnamethylation', dnamethylationSchema);
 };
+
