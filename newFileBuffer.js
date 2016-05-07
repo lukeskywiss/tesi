@@ -6,7 +6,7 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed";
+var root2= "bed/brca/dnaseq";
 var async = require('async');
 require('./Genome.js')();
 
