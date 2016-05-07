@@ -23,7 +23,8 @@ require('./model/rnaseqv2/rnaseqv2genequantification.js')();
 require('./model/rnaseqv2/rnaseqv2isoformquantification.js')();
 require('./model/rnaseqv2/rnaseqv2spljxnquantification.js')();
 
-
+var linestream = require('line-stream');
+var s = linestream();
 
 //create all the model for the varius experiment
 var dnaseq = mongoose.model('dnaseq');
@@ -49,30 +50,43 @@ function findFile(rootOfFile, arrayParametri, cb){
     //è perchè è asincreono quindi continua tutto il codice e solo alla fine mi da il risultato??
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
-        console.log("è il file bed che cerchi!!!");
-        fs.readFile(rootOfFile, function(err, data){
-            if(err){
-                console.log(err);
-            }
-            //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
-            string= data.toString().split( /\r\n/g);//regex la condizione.
-            output= addLine(string,arrayParametri, rootOfFile);
-            cb(output);
-            var aggiungi=convertFromStringToJSON(output);
 
-            /*            mongoose.connect('mongodb://localhost/genome', function(err) {
-             if (err) throw err;
-
-             async.each(aggiungi, function(item, cb) {
-             Genome.create(item, cb);
-             }, function(err) {
-             if (err) {
-             // handle error
-             }
-             });
-
-             });*/
+        var array= [];
+        s.on('data',function(line){
+            output= addLine(line+'', arrayParametri, rootOfFile);
+            array.push(output);
+            var aggiungi= convertFromStringToJSON(array);
+            addtodatabase(aggiungi, rootOfFile);
         });
+
+
+
+        fs.createReadStream(rootOfFile).pipe(s);
+
+        /* console.log("è il file bed che cerchi!!!");
+         fs.readFile(rootOfFile, function(err, data){
+             if(err){
+                 console.log(err);
+             }
+             //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
+             string= data.toString().split( /\r\n/g);//regex la condizione.
+             output= addLine(string,arrayParametri, rootOfFile);
+             cb(output);
+             var aggiungi=convertFromStringToJSON(output);
+
+             /!*            mongoose.connect('mongodb://localhost/genome', function(err) {
+              if (err) throw err;
+
+              async.each(aggiungi, function(item, cb) {
+              Genome.create(item, cb);
+              }, function(err) {
+              if (err) {
+              // handle error
+              }
+              });
+
+              });*!/
+         })*/;
     }
     else if (path.extname(rootOfFile)==".schema"){
         console.log("è il file header da cui prendere i campi!!!");
@@ -84,6 +98,7 @@ function findFile(rootOfFile, arrayParametri, cb){
     else{
         console.log("é un file che non devi leggere!!");
     }
+
 }
 
 
@@ -146,26 +161,28 @@ function findString(array) {
 };
 
 //splits a string whenever it finds a \t arrayofString sono le righe del file
-function addLine(arrayofString, fields, typeofexperiment){
-    var output= [];
+function addLine(arrayofString, fields, typeofexperiment) {
 
-    for(var j = 0; j < arrayofString.length - 1; j++){
-        var temp = arrayofString[j].toString().split("\t");
 
-        var row = {};
 
-        for (var i = 0; i < fields.length; i ++){
-            row["" + fields[i]] = temp[i];
-        }
-        output.push(row);
+    var temp = arrayofString.toString().split("\t");
+
+    var row = {};
+
+    for (var i = 0; i < fields.length; i++) {
+        row["" + fields[i]] = temp[i];
+    }
+    return row;
+
+}
 
         // databse.addDocumentToDatabase(row);
-    }
 
-    async.each(output, function(item, cb) {
+function addtodatabase(objtoadd, typeofexperiment){
+
         if(typeofexperiment.indexOf("dnaseq")>-1) {
-            dnaseq.create(item, cb);
-        }else if(typeofexperiment.indexOf("cnv")>-1) {
+           dnaseq.collection.save(objtoadd);
+        }/*else if(typeofexperiment.indexOf("cnv")>-1) {
             cnv.create(item, cb);
         }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
             dnamethylation.create(item, cb);
@@ -187,21 +204,13 @@ function addLine(arrayofString, fields, typeofexperiment){
             rnaseqv2isoformquantification.create(item, cb);
         }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
             rnaseqv2spljxnquantification.create(item, cb);
-        }
+        }*/
 
-    }, function(err) {
-        if (err) {
-            console.log("");
-        }
-    });
-
-
-    return output;
 };
 
 //converts a Genome in a JSON file
 function convertFromStringToJSON(string){
-    stringForMongo = JSON.stringify(string);
+    var stringForMongo = JSON.stringify(string);
     console.log(stringForMongo);
     /*
      mongoose.connect('mongodb://localhost/genome', function(err) {
