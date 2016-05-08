@@ -6,23 +6,22 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed/brca/dnaseq";
+var root2= "bed/brca/";
 var async = require('async');
 require('./Genome.js')();
 
-var dnaseq =require('./model/dnaseq');
-/*require('./model/cnv.js')();
-require('./model/dnamethylation.js')();
-require('./model/mirnaseq/mirnaseqisoformquantification.js')();
-require('./model/mirnaseq/mirnaseqmirnaquantification.js')();
-require('./model/rnaseq/rnaseqexonquantification.js')();
-require('./model/rnaseq/rnaseqgenequantification.js')();
-require('./model/rnaseq/rnaseqspljxnquantification.js')();
-require('./model/rnaseqv2/rnaseqv2exonquantification.js')();
-require('./model/rnaseqv2/rnaseqv2genequantification.js')();
-require('./model/rnaseqv2/rnaseqv2isoformquantification.js')();
-require('./model/rnaseqv2/rnaseqv2spljxnquantification.js')();
-*/
+var dnaseq = require('./model/dnaseq');
+var cnv = require('./model/cnv');
+var dnamethylation = require('./model/dnamethylation');
+var mirnaseqisoformquantification = require('./model/mirnaseq/mirnaseqisoformquantification');
+var mirnaseqmirnaquantification = require('./model/mirnaseq/mirnaseqmirnaquantification');
+var rnaseqexonquantification = require('./model/rnaseq/rnaseqexonquantification');
+var rnaseqgenequantification = require('./model/rnaseq/rnaseqgenequantification');
+var rnaseqspljxnquantification = require('./model/rnaseq/rnaseqspljxnquantification');
+var rnaseqv2exonquantification = require('./model/rnaseqv2/rnaseqv2exonquantification');
+var rnaseqv2genequantification = require('./model/rnaseqv2/rnaseqv2genequantification');
+var rnaseqv2isoformquantification = require('./model/rnaseqv2/rnaseqv2isoformquantification');
+var rnaseqv2spljxnquantification = require('./model/rnaseqv2/rnaseqv2spljxnquantification');
 
 var linestream = require('line-stream');
 var s = linestream();
@@ -55,14 +54,8 @@ function findFile(rootOfFile, arrayParametri, cb){
 
         s.on('data',function(line){
             output= addLine(line+'', arrayParametri, rootOfFile);
+                addtodatabase(output,rootOfFile);
 
-
-
-            var aggiungi= convertFromStringToJSON(output);
-            if(rootOfFile.indexOf("dnaseq")>-1) {
-                var o = new dnaseq(aggiungi.toString());
-                addtodatabase(o,rootOfFile);
-            }
         });
 
 
@@ -188,35 +181,67 @@ function addLine(arrayofString, fields, typeofexperiment) {
 function addtodatabase(objtoadd, typeofexperiment){
 
         if(typeofexperiment.indexOf("dnaseq")>-1) {
-           objtoadd.save(function(err) {
+            var o = new dnaseq(objtoadd);
+           o.save(function(err) {
                if (err) throw err;
-
-               console.log('User saved successfully!');
            });
-        }/*else if(typeofexperiment.indexOf("cnv")>-1) {
-            cnv.create(item, cb);
-        }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
-            dnamethylation.create(item, cb);
-        }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
-            mirnaseqisoformquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("mirna.quantification")>-1) {
-            mirnaseqmirnaquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
-            rnaseqexonquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
-            rnaseqgenequantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
-            rnaseqspljxnquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
-            rnaseqv2exonquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
-            rnaseqv2genequantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
-            rnaseqv2isoformquantification.create(item, cb);
-        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
-            rnaseqv2spljxnquantification.create(item, cb);
-        }*/
+        }else if(typeofexperiment.indexOf("cnv")>-1) {
+            var a= new cnv(objtoadd);
+            a.save(function(err){
+                if (err) throw err;
+            });
+        }/*else if(typeofexperiment.indexOf("dnamethylation")>-1) {
+            var o = new dnamethylation(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
 
+        }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
+            var o = new mirnaseqisoformquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("mirna.quantification")>-1) {
+            var o = new mirnaseqmirnaquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
+            var o = new rnaseqexonquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
+            var o = new rnaseqgenequantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
+            var o = new rnaseqspljxnquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
+            var o = new rnaseqv2exonquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
+            var o = new rnaseqv2genequantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
+            var o = new rnaseqv2isoformquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
+            var o = new rnaseqv2spljxnquantification(objtoadd);
+            o.save(function(err) {
+                if (err) throw err;
+            });
+        }*/
 };
 
 //converts a Genome in a JSON file

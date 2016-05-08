@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // create an export function to encapsulate the model creation
-module.exports = function() {
+
     // define schema
     var dnamethylationSchema = new Schema({
         "chr": String,
@@ -17,6 +17,5 @@ module.exports = function() {
         "beta_value": Number,
         "gene_symbol": String
     });
-    mongoose.model('dnamethylation', dnamethylationSchema);
-};
-
+    var dnamethylation=mongoose.model('dnamethylation', dnamethylationSchema);
+module.exports= dnamethylation;

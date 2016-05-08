@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // create an export function to encapsulate the model creation
-module.exports = function() {
+
     // define schema
     var mirnaseqisoformquantificationSchema = new Schema({
         "chr": String,
@@ -18,6 +18,6 @@ module.exports = function() {
         "cross-mapped": String,
         "miRNA_region": String
     });
-    mongoose.model('mirnaseqisoformquantification', mirnaseqisoformquantificationSchema);
-};
+    var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification', mirnaseqisoformquantificationSchema);
 
+module.exports = mirnaseqisoformquantification;

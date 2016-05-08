@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // create an export function to encapsulate the model creation
-module.exports = function() {
+
     // define schema
     var rnaseqv2exonquantificationSchema = new Schema({
         "chr": String,
@@ -16,5 +16,5 @@ module.exports = function() {
         "rpkm": Number
 
     });
-    mongoose.model('rnaseqv2exonquantification', rnaseqv2exonquantificationSchema);
-};
+   var rnaseqv2exonquantification =  mongoose.model('rnaseqv2exonquantification', rnaseqv2exonquantificationSchema);
+module.exports = rnaseqv2exonquantification;
