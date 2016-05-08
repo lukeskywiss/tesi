@@ -10,8 +10,8 @@ var root2= "bed/brca/dnaseq";
 var async = require('async');
 require('./Genome.js')();
 
-require('./model/dnaseq.js')();
-require('./model/cnv.js')();
+var dnaseq =require('./model/dnaseq');
+/*require('./model/cnv.js')();
 require('./model/dnamethylation.js')();
 require('./model/mirnaseq/mirnaseqisoformquantification.js')();
 require('./model/mirnaseq/mirnaseqmirnaquantification.js')();
@@ -22,12 +22,13 @@ require('./model/rnaseqv2/rnaseqv2exonquantification.js')();
 require('./model/rnaseqv2/rnaseqv2genequantification.js')();
 require('./model/rnaseqv2/rnaseqv2isoformquantification.js')();
 require('./model/rnaseqv2/rnaseqv2spljxnquantification.js')();
+*/
 
 var linestream = require('line-stream');
 var s = linestream();
 
 //create all the model for the varius experiment
-var dnaseq = mongoose.model('dnaseq');
+/*var dnaseq = mongoose.model('dnaseq');
 var cnv = mongoose.model('cnv');
 var dnamethylation= mongoose.model('dnamethylation');
 var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification');
@@ -39,7 +40,7 @@ var rnaseqv2exonquantification = mongoose.model('rnaseqv2exonquantification');
 var rnaseqv2genequantification = mongoose.model('rnaseqv2genequantification');
 var rnaseqv2isoformquantification = mongoose.model('rnaseqv2isoformquantification');
 var rnaseqv2spljxnquantification = mongoose.model('rnaseqv2spljxnquantification');
-
+*/
 
 
 //Find file in a Directory and in output show the file text
@@ -51,12 +52,17 @@ function findFile(rootOfFile, arrayParametri, cb){
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
 
-        var array= [];
+
         s.on('data',function(line){
             output= addLine(line+'', arrayParametri, rootOfFile);
-            array.push(output);
-            var aggiungi= convertFromStringToJSON(array);
-            addtodatabase(aggiungi, rootOfFile);
+
+
+
+            var aggiungi= convertFromStringToJSON(output);
+            if(rootOfFile.indexOf("dnaseq")>-1) {
+                var o = new dnaseq(aggiungi.toString());
+                addtodatabase(o,rootOfFile);
+            }
         });
 
 
@@ -163,6 +169,7 @@ function findString(array) {
 //splits a string whenever it finds a \t arrayofString sono le righe del file
 function addLine(arrayofString, fields, typeofexperiment) {
 
+    arrayofString = arrayofString.replace(/\r/g, '');
 
 
     var temp = arrayofString.toString().split("\t");
@@ -181,7 +188,11 @@ function addLine(arrayofString, fields, typeofexperiment) {
 function addtodatabase(objtoadd, typeofexperiment){
 
         if(typeofexperiment.indexOf("dnaseq")>-1) {
-           dnaseq.collection.save(objtoadd);
+           objtoadd.save(function(err) {
+               if (err) throw err;
+
+               console.log('User saved successfully!');
+           });
         }/*else if(typeofexperiment.indexOf("cnv")>-1) {
             cnv.create(item, cb);
         }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
@@ -211,6 +222,7 @@ function addtodatabase(objtoadd, typeofexperiment){
 //converts a Genome in a JSON file
 function convertFromStringToJSON(string){
     var stringForMongo = JSON.stringify(string);
+    JSON.parse(stringForMongo);
     console.log(stringForMongo);
     /*
      mongoose.connect('mongodb://localhost/genome', function(err) {
@@ -222,10 +234,6 @@ function convertFromStringToJSON(string){
 
 };
 
-function trovatipoesperimento(string){
-    string
-
-}
 
 databse.connectDatabase();
 searchFileInDirectory(root2);

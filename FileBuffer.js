@@ -165,28 +165,40 @@ function addLine(arrayofString, fields, typeofexperiment){
     async.each(output, function(item, cb) {
         if(typeofexperiment.indexOf("dnaseq")>-1) {
             dnaseq.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("cnv")>-1) {
             cnv.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
             dnamethylation.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
             mirnaseqisoformquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("mirna.quantification")>-1) {
             mirnaseqmirnaquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
             rnaseqexonquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
             rnaseqgenequantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
             rnaseqspljxnquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
             rnaseqv2exonquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
             rnaseqv2genequantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
             rnaseqv2isoformquantification.create(item, cb);
+            output.pop(item);
         }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
             rnaseqv2spljxnquantification.create(item, cb);
+            output.pop(item);
         }
 
     }, function(err) {
@@ -202,13 +214,11 @@ function addLine(arrayofString, fields, typeofexperiment){
 //converts a Genome in a JSON file
 function convertFromStringToJSON(string){
     stringForMongo = JSON.stringify(string);
-    console.log(stringForMongo);
     /*
      mongoose.connect('mongodb://localhost/genome', function(err) {
      if (err) throw err;
      */
 
-    console.log("\n");
     return stringForMongo;
 
 };
