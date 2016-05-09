@@ -6,7 +6,7 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed/brca/";
+var root2= "bed/brca/dnamethylation";
 var async = require('async');
 require('./Genome.js')();
 
@@ -27,19 +27,7 @@ var linestream = require('line-stream');
 var s = linestream();
 
 //create all the model for the varius experiment
-/*var dnaseq = mongoose.model('dnaseq');
-var cnv = mongoose.model('cnv');
-var dnamethylation= mongoose.model('dnamethylation');
-var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification');
-var mirnaseqmirnaquantification = mongoose.model('mirnaseqmirnaquantification');
-var rnaseqexonquantification = mongoose.model('rnaseqexonquantification');
-var rnaseqgenequantification = mongoose.model('rnaseqgenequantification');
-var rnaseqspljxnquantification= mongoose.model('rnaseqspljxnquantification');
-var rnaseqv2exonquantification = mongoose.model('rnaseqv2exonquantification');
-var rnaseqv2genequantification = mongoose.model('rnaseqv2genequantification');
-var rnaseqv2isoformquantification = mongoose.model('rnaseqv2isoformquantification');
-var rnaseqv2spljxnquantification = mongoose.model('rnaseqv2spljxnquantification');
-*/
+var cnvsaver = require('./cnvsaver.js');
 
 
 //Find file in a Directory and in output show the file text
@@ -50,15 +38,11 @@ function findFile(rootOfFile, arrayParametri, cb){
     //è perchè è asincreono quindi continua tutto il codice e solo alla fine mi da il risultato??
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
-
-
         s.on('data',function(line){
             output= addLine(line+'', arrayParametri, rootOfFile);
                 addtodatabase(output,rootOfFile);
 
         });
-
-
 
         fs.createReadStream(rootOfFile).pipe(s);
 
@@ -162,7 +146,7 @@ function findString(array) {
 //splits a string whenever it finds a \t arrayofString sono le righe del file
 function addLine(arrayofString, fields, typeofexperiment) {
 
-    arrayofString = arrayofString.replace(/\r/g, '');
+    arrayofString = arrayofString.replace(/\r\n/g, '');
 
 
     var temp = arrayofString.toString().split("\t");
@@ -180,23 +164,17 @@ function addLine(arrayofString, fields, typeofexperiment) {
 
 function addtodatabase(objtoadd, typeofexperiment){
 
-        if(typeofexperiment.indexOf("dnaseq")>-1) {
-            var o = new dnaseq(objtoadd);
-           o.save(function(err) {
-               if (err) throw err;
-           });
+       if(typeofexperiment.indexOf("dnaseq")>-1) {
+           adddnaseqtodatabse(objtoadd);
         }else if(typeofexperiment.indexOf("cnv")>-1) {
-            var a= new cnv(objtoadd);
-            a.save(function(err){
-                if (err) throw err;
-            });
-        }/*else if(typeofexperiment.indexOf("dnamethylation")>-1) {
-            var o = new dnamethylation(objtoadd);
-            o.save(function(err) {
+            cnvsaver.addcnvtodatabase(objtoadd);
+        }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
+            var o = dnamethylation();
+            o.save(objtoadd,function(err) {
                 if (err) throw err;
             });
 
-        }else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
+        }/*else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
             var o = new mirnaseqisoformquantification(objtoadd);
             o.save(function(err) {
                 if (err) throw err;
@@ -257,6 +235,13 @@ function convertFromStringToJSON(string){
     console.log("\n");
     return stringForMongo;
 
+};
+
+function adddnaseqtodatabse(objtoadd) {
+    var o = dnaseq(objtoadd);
+    o.save(function (err) {
+        if (err) throw err;
+    });
 };
 
 

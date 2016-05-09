@@ -9,13 +9,13 @@ var Schema = mongoose.Schema;
 
     // define schema
     var dnamethylationSchema = new Schema({
-        "chr": String,
-        "start": String,
-        "end": String,
-        "strand": String,
-        "composite_element_ref": String,
-        "beta_value": Number,
-        "gene_symbol": String
+        chr: String,
+        start: String,
+        end: String,
+        strand: String,
+        composite_element_ref: String,
+        beta_value: Number,
+        gene_symbol: String
     });
     var dnamethylation=mongoose.model('dnamethylation', dnamethylationSchema);
 module.exports= dnamethylation;
