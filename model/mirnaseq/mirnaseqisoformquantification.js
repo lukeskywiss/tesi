@@ -15,7 +15,7 @@ var Schema = mongoose.Schema;
         "mirna_id": String,
         "read_count" : Number,
         "reads_per_million_miRNA_mapped": Number,
-        "cross-mapped": String,
+        "cross_mapped": String,
         "miRNA_region": String
     });
     var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification', mirnaseqisoformquantificationSchema);

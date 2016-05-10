@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 module.exports=
 {
 //Establishes a connection to the Database
-    connectDatabase: function(){
+    connectDatabase: function(cb){
        /* mongoose.connect('mongodb://localhost');
         var db = mongoose.connection;
         db.on('error', console.error.bind(console, 'connection error:'));
@@ -21,6 +21,7 @@ module.exports=
         MongoDB.on('error', function(err) { console.log(err.message); });
         MongoDB.once('open', function() {
             console.log("mongodb connection open");
+            cb();
         });
     },
 

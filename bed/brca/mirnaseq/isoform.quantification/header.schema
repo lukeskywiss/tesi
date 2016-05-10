@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmqlSchemaCollection name="GLOBAL_SCHEMAS" xmlns="http://services.gmql.com/entities">
+	<gmqlSchema type="tab">
+		<field type="STRAND">strand</field>
+		<field type="STRING">genome_version</field>
+		<field type="STRING">mirna_id</field>
+		<field type="INTEGER">read_count</field>
+		<field type="FLOAT">reads_per_million_miRNA_mapped</field>
+		<field type="STRING">cross-mapped</field>
+		<field type="STRING">miRNA_region</field>
+	</gmqlSchema>
+</gmqlSchemaCollection>
