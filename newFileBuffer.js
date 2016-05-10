@@ -6,7 +6,7 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed/brca/dnamethylation";
+var root2= "bed/brca";
 var async = require('async');
 require('./Genome.js')();
 
@@ -38,6 +38,7 @@ function findFile(rootOfFile, arrayParametri, cb){
     //è perchè è asincreono quindi continua tutto il codice e solo alla fine mi da il risultato??
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
+        var s = linestream();
         s.on('data',function(line){
             output= addLine(line+'', arrayParametri, rootOfFile);
                 addtodatabase(output,rootOfFile);
@@ -169,9 +170,10 @@ function addtodatabase(objtoadd, typeofexperiment){
         }else if(typeofexperiment.indexOf("cnv")>-1) {
             cnvsaver.addcnvtodatabase(objtoadd);
         }else if(typeofexperiment.indexOf("dnamethylation")>-1) {
-            var o = dnamethylation();
+            var o = new dnamethylation(objtoadd);
             o.save(objtoadd,function(err) {
                 if (err) throw err;
+                delete o;
             });
 
         }/*else if(typeofexperiment.indexOf("mirnaseq")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
@@ -238,9 +240,10 @@ function convertFromStringToJSON(string){
 };
 
 function adddnaseqtodatabse(objtoadd) {
-    var o = dnaseq(objtoadd);
+    var o = new dnaseq(objtoadd);
     o.save(function (err) {
         if (err) throw err;
+        delete o;
     });
 };
 
