@@ -8,15 +8,15 @@ var Schema = mongoose.Schema;
 
     // define schema
     var mirnaseqisoformquantificationSchema = new Schema({
-        "chr": String,
-        "start": String,
-        "end": String,
-        "strand": String,
-        "mirna_id": String,
-        "read_count" : Number,
-        "reads_per_million_miRNA_mapped": Number,
-        "cross_mapped": String,
-        "miRNA_region": String
+        chr: String,
+        start: String,
+        end: String,
+        strand: String,
+        mirna_id: String,
+        read_count : Number,
+        reads_per_million_miRNA_mapped: Number,
+        cross_mapped: String,
+        miRNA_region: String
     });
     var mirnaseqisoformquantification = mongoose.model('mirnaseqisoformquantification', mirnaseqisoformquantificationSchema);
 

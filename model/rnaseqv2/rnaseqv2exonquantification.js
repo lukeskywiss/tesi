@@ -7,13 +7,13 @@ var Schema = mongoose.Schema;
 
     // define schema
     var rnaseqv2exonquantificationSchema = new Schema({
-        "chr": String,
-        "start": String,
-        "end": String,
-        "strand": String,
-        "raw_counts": Number,
-        "median_length_normalized": Number,
-        "rpkm": Number
+        chr : String,
+        start : String,
+        end : String,
+        strand : String,
+        raw_counts : Number,
+        median_length_normalized : Number,
+        rpkm : Number
 
     });
    var rnaseqv2exonquantification =  mongoose.model('rnaseqv2exonquantification', rnaseqv2exonquantificationSchema);

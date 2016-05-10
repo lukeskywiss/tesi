@@ -6,7 +6,7 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed/brca/rnaseq";
+var root2= "bed";
 var async = require('async');
 require('./Genome.js')();
 
@@ -43,17 +43,13 @@ function findFile(rootOfFile, arrayParametri, cb){
         s.on('data',function(line){
             stream.pause();
             s.pause();
-            console.log("a");
             var output= addLine(line+'', arrayParametri, rootOfFile);
-                console.log("b");
                 addtodatabase(output,rootOfFile, function (){
-                    console.log("c");
                     stream.resume();
                     s.resume();
                 });
 
         });
-
         stream.pipe(s);
 
         /* console.log("è il file bed che cerchi!!!");
@@ -178,14 +174,17 @@ function addtodatabase(objtoadd, typeofexperiment, cb) {
 
     if (typeofexperiment.indexOf("dnaseq") > -1) {
         adddnaseqtodatabse(objtoadd);
+        cb();
     } else if (typeofexperiment.indexOf("cnv") > -1) {
         cnvsaver.addcnvtodatabase(objtoadd);
+        cb();
     } else if (typeofexperiment.indexOf("dnamethylation") > -1) {
         var o = new dnamethylation(objtoadd);
         o.save(objtoadd, function (err) {
             if (err) throw err;
             delete o;
             delete objtoadd;
+            cb();
         });
 
     } else if (typeofexperiment.indexOf("mirnaseq") > -1 && typeofexperiment.indexOf("isoform.quantification") > -1) {
@@ -193,11 +192,16 @@ function addtodatabase(objtoadd, typeofexperiment, cb) {
         o.save(function (err) {
             if (err) throw err;
             delete o;
+            delete objtoadd;
+            cb();
         });
     } else if (typeofexperiment.indexOf("mirnaseq") > -1 && typeofexperiment.indexOf("mirna.quantification") > -1) {
         var o = new mirnaseqmirnaquantification(objtoadd);
         o.save(function (err) {
             if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
         });
     } else if (typeofexperiment.indexOf("rnaseq") > -1 && typeofexperiment.indexOf("exon.quantification") > -1) {
         var o = rnaseqexonquantification(objtoadd);
@@ -207,38 +211,55 @@ function addtodatabase(objtoadd, typeofexperiment, cb) {
             delete objtoadd;
             cb();
         });
-    }
-    /*else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
+    }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
      var o = new rnaseqgenequantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
      }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
      var o = new rnaseqspljxnquantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
      }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
      var o = new rnaseqv2exonquantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
      }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
      var o = new rnaseqv2genequantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
      }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
      var o = new rnaseqv2isoformquantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
      }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
      var o = new rnaseqv2spljxnquantification(objtoadd);
      o.save(function(err) {
      if (err) throw err;
+         delete o;
+         delete objtoadd;
+         cb();
      });
-     }*/
+     }
 };
 
 //converts a Genome in a JSON file

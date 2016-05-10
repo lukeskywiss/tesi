@@ -6,14 +6,14 @@ var Schema = mongoose.Schema;
 
     // define schema
     var mirnaseqmirnaquantificationSchema = new Schema({
-        "chr": String,
-        "start": String,
-        "end": String,
-        "strand": String,
-        "mirna_id": String,
-        "read_count" : Number,
-        "reads_per_million_miRNA_mapped": Number,
-        "cross-mapped": String
+        chr : String,
+        start : String,
+        end : String,
+        strand : String,
+        mirna_id : String,
+        read_count : Number,
+        reads_per_million_miRNA_mapped: Number,
+        cross_mapped : String
     });
     var mirnaseqmirnaquantification = mongoose.model('mirnaseqmirnaquantification', mirnaseqmirnaquantificationSchema);
 module.exports = mirnaseqmirnaquantification;

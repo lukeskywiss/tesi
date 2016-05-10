@@ -7,13 +7,13 @@ var Schema = mongoose.Schema;
 
     // define schema
     var rnaseqspljxnquantificationSchema = new Schema({
-        "chr": String,
-        "start": String,
-        "end": String,
-        "strand": String,
-        "raw_counts": Number,
-        "inner_left" : Number,
-        "inner_right": Number
+        chr : String,
+        start : String,
+        end : String,
+        strand : String,
+        raw_counts : Number,
+        inner_left : Number,
+        inner_right : Number
 
     });
   var rnaseqspljxnquantification =  mongoose.model('rnaseqspljxnquantification', rnaseqspljxnquantificationSchema);

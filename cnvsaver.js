@@ -6,5 +6,6 @@ var cnv = require('./model/cnv');
     a.save(function(err){
         if (err) throw err;
         delete a;
+        delete objtoadd;
     });
 };
