@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 // create an export function to encapsulate the model creation
     // define schema
     var rnaseqgenequantificationSchema = new Schema({
+        tumor : String,
         chr : String,
         start : String,
         end : String,

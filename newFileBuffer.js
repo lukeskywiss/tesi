@@ -39,42 +39,39 @@ function findFile(rootOfFile, arrayParametri, cb){
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
         var stream = fs.createReadStream(rootOfFile);
-        var s = linestream();
+        var s = linestream("\n");
         s.on('data',function(line){
             stream.pause();
             s.pause();
             var output= addLine(line+'', arrayParametri, rootOfFile);
-                addtodatabase(output,rootOfFile, function (){
-                    stream.resume();
-                    s.resume();
-                });
+            addtodatabase(output,rootOfFile, function (){
+                stream.resume();
+                s.resume();
+            });
 
         });
         stream.pipe(s);
 
         /* console.log("è il file bed che cerchi!!!");
          fs.readFile(rootOfFile, function(err, data){
-             if(err){
-                 console.log(err);
-             }
-             //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
-             string= data.toString().split( /\r\n/g);//regex la condizione.
-             output= addLine(string,arrayParametri, rootOfFile);
-             cb(output);
-             var aggiungi=convertFromStringToJSON(output);
-
-             /!*            mongoose.connect('mongodb://localhost/genome', function(err) {
-              if (err) throw err;
-
-              async.each(aggiungi, function(item, cb) {
-              Genome.create(item, cb);
-              }, function(err) {
-              if (err) {
-              // handle error
-              }
-              });
-
-              });*!/
+         if(err){
+         console.log(err);
+         }
+         //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
+         string= data.toString().split( /\r\n/g);//regex la condizione.
+         output= addLine(string,arrayParametri, rootOfFile);
+         cb(output);
+         var aggiungi=convertFromStringToJSON(output);
+         /!*            mongoose.connect('mongodb://localhost/genome', function(err) {
+         if (err) throw err;
+         async.each(aggiungi, function(item, cb) {
+         Genome.create(item, cb);
+         }, function(err) {
+         if (err) {
+         // handle error
+         }
+         });
+         });*!/
          })*/;
     }
     else if (path.extname(rootOfFile)==".schema"){
@@ -168,11 +165,12 @@ function addLine(arrayofString, fields, typeofexperiment) {
 
 };
 
-        // databse.addDocumentToDatabase(row);
+// databse.addDocumentToDatabase(row);
 
 function addtodatabase(objtoadd, typeofexperiment, cb) {
 
     if (typeofexperiment.indexOf("dnaseq") > -1) {
+
         adddnaseqtodatabse(objtoadd);
         cb();
     } else if (typeofexperiment.indexOf("cnv") > -1) {
@@ -203,7 +201,7 @@ function addtodatabase(objtoadd, typeofexperiment, cb) {
             delete objtoadd;
             cb();
         });
-    } else if (typeofexperiment.indexOf("rnaseq") > -1 && typeofexperiment.indexOf("exon.quantification") > -1) {
+    } else if (typeofexperiment.indexOf("rnaseq") > -1 && typeofexperiment.indexOf("exon.quantification") > -1 && typeofexperiment.indexOf("v2")<0) {
         var o = rnaseqexonquantification(objtoadd);
         o.save(function (err) {
             if (err) throw err;
@@ -211,71 +209,57 @@ function addtodatabase(objtoadd, typeofexperiment, cb) {
             delete objtoadd;
             cb();
         });
-    }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
-     var o = new rnaseqgenequantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
-     var o = new rnaseqspljxnquantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
-     var o = new rnaseqv2exonquantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
-     var o = new rnaseqv2genequantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
-     var o = new rnaseqv2isoformquantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
-     var o = new rnaseqv2spljxnquantification(objtoadd);
-     o.save(function(err) {
-     if (err) throw err;
-         delete o;
-         delete objtoadd;
-         cb();
-     });
-     }
+    }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1 && typeofexperiment.indexOf("v2")<0) {
+        var o = new rnaseqgenequantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1 && typeofexperiment.indexOf("v2")<0) {
+        var o = new rnaseqspljxnquantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
+        var o = new rnaseqv2exonquantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
+        var o = new rnaseqv2genequantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
+        var o = new rnaseqv2isoformquantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
+        var o = new rnaseqv2spljxnquantification(objtoadd);
+        o.save(function(err) {
+            if (err) throw err;
+            delete o;
+            delete objtoadd;
+            cb();
+        });
+    }
 };
 
-//converts a Genome in a JSON file
-function convertFromStringToJSON(string){
-    var stringForMongo = JSON.stringify(string);
-    JSON.parse(stringForMongo);
-    console.log(stringForMongo);
-    /*
-     mongoose.connect('mongodb://localhost/genome', function(err) {
-     if (err) throw err;
-     */
-
-    console.log("\n");
-    return stringForMongo;
-
-};
 
 function adddnaseqtodatabse(objtoadd) {
     var o = new dnaseq(objtoadd);
@@ -290,7 +274,3 @@ function adddnaseqtodatabse(objtoadd) {
 databse.connectDatabase(function (){
     searchFileInDirectory(root2);
 });
-
-
-
-

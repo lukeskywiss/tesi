@@ -6,6 +6,7 @@ var Schema = mongoose.Schema;
 
     // define schema
     var mirnaseqmirnaquantificationSchema = new Schema({
+        tumor : String,
         chr : String,
         start : String,
         end : String,

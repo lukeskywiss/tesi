@@ -9,6 +9,7 @@ var Schema = mongoose.Schema;
 
     // define schema
     var dnaseqSchema = new Schema({
+        tumor : String,
         chr: String,
         start: String,
         end: String,

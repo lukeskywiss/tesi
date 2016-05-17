@@ -7,6 +7,7 @@ var Schema = mongoose.Schema;
 
     // define schema
     var rnaseqv2genequantificationSchema = new Schema({
+        tumor : String,
         chr : String,
         start : String,
         end : String,

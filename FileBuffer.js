@@ -6,7 +6,7 @@ var fs= require('fs');
 var path= require('path');
 var databse = require('./Database');
 var mongoose = require('mongoose');
-var root2= "bed";
+var root2= "bed/brca/rnaseq/gene.quantification";
 var async = require('async');
 require('./Genome.js')();
 
@@ -55,8 +55,8 @@ function findFile(rootOfFile, arrayParametri, cb){
                 console.log(err);
             }
             //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
-            string= data.toString().split( /\r\n/g);//regex la condizione.
-            output= addLine(string,arrayParametri, rootOfFile);
+            var string= data.toString().split( /\r\n/g);//regex la condizione.
+            var output= addLine(string,arrayParametri, rootOfFile);
             cb(output);
             var aggiungi=convertFromStringToJSON(output);
 
@@ -161,8 +161,9 @@ function addLine(arrayofString, fields, typeofexperiment){
 
         // databse.addDocumentToDatabase(row);
     }
+    var aggiungi=convertFromStringToJSON(output);
 
-    async.each(output, function(item, cb) {
+    async.each(aggiungi, function(item, cb) {
         if(typeofexperiment.indexOf("dnaseq")>-1) {
             dnaseq.create(item, cb);
             output.pop(item);
