@@ -8,20 +8,20 @@ var databse = require('./Database');
 var mongoose = require('mongoose');
 var root2= "bed";
 var async = require('async');
-require('./Genome.js')();
 
-var dnaseq = require('./model/dnaseq');
-var cnv = require('./model/cnv');
-var dnamethylation = require('./model/dnamethylation');
-var mirnaseqisoformquantification = require('./model/mirnaseq/mirnaseqisoformquantification');
-var mirnaseqmirnaquantification = require('./model/mirnaseq/mirnaseqmirnaquantification');
-var rnaseqexonquantification = require('./model/rnaseq/rnaseqexonquantification');
-var rnaseqgenequantification = require('./model/rnaseq/rnaseqgenequantification');
-var rnaseqspljxnquantification = require('./model/rnaseq/rnaseqspljxnquantification');
-var rnaseqv2exonquantification = require('./model/rnaseqv2/rnaseqv2exonquantification');
-var rnaseqv2genequantification = require('./model/rnaseqv2/rnaseqv2genequantification');
-var rnaseqv2isoformquantification = require('./model/rnaseqv2/rnaseqv2isoformquantification');
-var rnaseqv2spljxnquantification = require('./model/rnaseqv2/rnaseqv2spljxnquantification');
+
+var dnaseq = require('./model/tumorExperiment/dnaseq');
+var cnv = require('./model/tumorExperiment/cnv');
+var dnamethylation = require('./model/tumorExperiment/dnamethylation');
+var mirnaseqisoformquantification = require('./model/tumorExperiment/mirnaseq/mirnaseqisoformquantification');
+var mirnaseqmirnaquantification = require('./model/tumorExperiment/mirnaseq/mirnaseqmirnaquantification');
+var rnaseqexonquantification = require('./model/tumorExperiment/rnaseq/rnaseqexonquantification');
+var rnaseqgenequantification = require('./model/tumorExperiment/rnaseq/rnaseqgenequantification');
+var rnaseqspljxnquantification = require('./model/tumorExperiment/rnaseq/rnaseqspljxnquantification');
+var rnaseqv2exonquantification = require('./model/tumorExperiment/rnaseqv2/rnaseqv2exonquantification');
+var rnaseqv2genequantification = require('./model/tumorExperiment/rnaseqv2/rnaseqv2genequantification');
+var rnaseqv2isoformquantification = require('./model/tumorExperiment/rnaseqv2/rnaseqv2isoformquantification');
+var rnaseqv2spljxnquantification = require('./model/tumorExperiment/rnaseqv2/rnaseqv2spljxnquantification');
 
 var linestream = require('line-stream');
 /*var s = linestream();*/
@@ -38,41 +38,7 @@ function findFile(rootOfFile, arrayParametri, cb){
     //è perchè è asincreono quindi continua tutto il codice e solo alla fine mi da il risultato??
     //così facendo però il returno è nullo come mi comporto?
     if( path.extname(rootOfFile)==".bed"){
-        var stream = fs.createReadStream(rootOfFile);
-        var s = linestream("\n");
-        s.on('data',function(line){
-            stream.pause();
-            s.pause();
-            var output= addLine(line+'', arrayParametri, rootOfFile);
-            addtodatabase(output,rootOfFile, function (){
-                stream.resume();
-                s.resume();
-            });
-
-        });
-        stream.pipe(s);
-
-        /* console.log("è il file bed che cerchi!!!");
-         fs.readFile(rootOfFile, function(err, data){
-         if(err){
-         console.log(err);
-         }
-         //Non c'è la separazione delle righe.. tentare con un nuovo metodo che mantiene le righe distitnte
-         string= data.toString().split( /\r\n/g);//regex la condizione.
-         output= addLine(string,arrayParametri, rootOfFile);
-         cb(output);
-         var aggiungi=convertFromStringToJSON(output);
-         /!*            mongoose.connect('mongodb://localhost/genome', function(err) {
-         if (err) throw err;
-         async.each(aggiungi, function(item, cb) {
-         Genome.create(item, cb);
-         }, function(err) {
-         if (err) {
-         // handle error
-         }
-         });
-         });*!/
-         })*/;
+        doall(arrayParametri,rootOfFile);
     }
     else if (path.extname(rootOfFile)==".schema"){
         console.log("è il file header da cui prendere i campi!!!");
@@ -109,7 +75,6 @@ function searchFileInDirectory(root){
                 findFile(str,fields,function(giad){
                     fields = giad;
                 });
-
             }
             else if(path.extname(str)== ".bed" && check==1){
                 console.log("il file xml è stato elaborato già puoi elaborare il file .bed");
@@ -131,6 +96,10 @@ function searchFileInDirectory(root){
 //splits the xml file in columns and needs to find the fields needed
 function findString(array) {
     var output= new Array();
+    output.push("tumor");
+    output.push("aliquote");
+    output.push("person_id");
+    output.push("tissue");
     output.push("chr");
     output.push("start");
     output.push("end");
@@ -152,124 +121,105 @@ function findString(array) {
 function addLine(arrayofString, fields, typeofexperiment) {
 
     arrayofString = arrayofString.replace(/\r\n/g, '');
-
-
     var temp = arrayofString.toString().split("\t");
-
     var row = {};
+    var tumorName= typeofexperiment.split(path.sep);
+    var aliquote =path.parse(typeofexperiment);
+    var personidandTissue= aliquote.name.split("-");
 
-    for (var i = 0; i < fields.length; i++) {
-        row["" + fields[i]] = temp[i];
+    row[""+ fields[0]]=tumorName[1];
+    row[""+ fields[1]]=aliquote.name;
+    row[""+ fields[2]]=personidandTissue[0]+"-"+personidandTissue[1]+"-"+personidandTissue[2];
+    row[""+ fields[3]]=personidandTissue[3];
+    for (var i = 4; i < fields.length; i++) {
+        row["" + fields[i]] = temp[i-4];
     }
     return row;
 
 };
 
-// databse.addDocumentToDatabase(row);
 
-function addtodatabase(objtoadd, typeofexperiment, cb) {
+
+//converts a Genome in a JSON file
+function convertFromStringToJSON(string){
+    stringForMongo = JSON.stringify(string);
+    return stringForMongo;
+};
+
+function findModel(typeofexperiment) {
 
     if (typeofexperiment.indexOf("dnaseq") > -1) {
-
-        adddnaseqtodatabse(objtoadd);
-        cb();
+        return new dnaseq();
     } else if (typeofexperiment.indexOf("cnv") > -1) {
-        cnvsaver.addcnvtodatabase(objtoadd);
-        cb();
+        return new cnv();
     } else if (typeofexperiment.indexOf("dnamethylation") > -1) {
-        var o = new dnamethylation(objtoadd);
-        o.save(objtoadd, function (err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
-
+        return new dnamethylation();
     } else if (typeofexperiment.indexOf("mirnaseq") > -1 && typeofexperiment.indexOf("isoform.quantification") > -1) {
-        var o = new mirnaseqisoformquantification(objtoadd);
-        o.save(function (err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new mirnaseqisoformquantification();
     } else if (typeofexperiment.indexOf("mirnaseq") > -1 && typeofexperiment.indexOf("mirna.quantification") > -1) {
-        var o = new mirnaseqmirnaquantification(objtoadd);
-        o.save(function (err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new mirnaseqmirnaquantification();
     } else if (typeofexperiment.indexOf("rnaseq") > -1 && typeofexperiment.indexOf("exon.quantification") > -1 && typeofexperiment.indexOf("v2")<0) {
-        var o = rnaseqexonquantification(objtoadd);
-        o.save(function (err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqexonquantification();
     }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("gene.quantification")>-1 && typeofexperiment.indexOf("v2")<0) {
-        var o = new rnaseqgenequantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqgenequantification();
     }else if(typeofexperiment.indexOf("rnaseq")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1 && typeofexperiment.indexOf("v2")<0) {
-        var o = new rnaseqspljxnquantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqspljxnquantification();
     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("exon.quantification")>-1) {
-        var o = new rnaseqv2exonquantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqv2exonquantification();
     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("gene.quantification")>-1) {
-        var o = new rnaseqv2genequantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqv2genequantification();
     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("isoform.quantification")>-1) {
-        var o = new rnaseqv2isoformquantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqv2isoformquantification();
     }else if(typeofexperiment.indexOf("rnaseqv2")>-1 && typeofexperiment.indexOf("spljxn.quantification")>-1) {
-        var o = new rnaseqv2spljxnquantification(objtoadd);
-        o.save(function(err) {
-            if (err) throw err;
-            delete o;
-            delete objtoadd;
-            cb();
-        });
+        return new rnaseqv2spljxnquantification();
     }
 };
 
 
-function adddnaseqtodatabse(objtoadd) {
-    var o = new dnaseq(objtoadd);
-    o.save(function (err) {
-        if (err) throw err;
-        delete o;
-        delete objtoadd;
-    });
-};
+function doall(arrayParametri, rootOfFile){
+    var arr =[];
+    var stream = fs.createReadStream(rootOfFile);
+    var s = linestream("\n");
+    var j =25000;
+    var count=0;
+    s.on('data',function(line){
+        stream.pause();
+        s.pause();
 
+        var output= addLine(line+'', arrayParametri, rootOfFile);
+        arr.push(output);
+        j = j-1;
+
+        if (j==0){
+            var gene = findModel(rootOfFile);
+            arr.forEach(function(item) {
+                gene.fields.push(item);
+            });
+            arr.length=0;
+            j=25000;
+            count =count + j;
+            gene.save(function(err){
+                if(!err){console.log("saved the first "+ count + " rows of the file "+ rootOfFile);
+                };
+            });
+        }
+        stream.resume();
+        s.resume();
+    });
+
+    stream.on('end', function(){
+        count =25000 - j;
+        var gene = findModel(rootOfFile);
+        arr.forEach(function(item){
+            gene.fields.push(item);
+        });
+        gene.save(function (err) {
+            if (!err) console.log('Success!saved '+ count +" rows of " +rootOfFile.toString());
+            arr.length=0;
+        });
+    });
+    stream.pipe(s);
+};
 
 databse.connectDatabase(function (){
     searchFileInDirectory(root2);

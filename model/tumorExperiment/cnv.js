@@ -11,8 +11,11 @@ var Schema = mongoose.Schema;
 // create an export function to encapsulate the model creation
 
     // define schema
-    var cnvSchema = new Schema({
+    var rowcnvSchema = new Schema({
         tumor : String,
+        aliquote: String,
+        person_id: String,
+        tissue: String,
         chr: String,
         start: String,
         end: String,
@@ -21,6 +24,11 @@ var Schema = mongoose.Schema;
         Segment_Mean: Number,
         is_nocnv:String
     });
+
+var cnvSchema = new Schema({
+    fields:[rowcnvSchema]
+});
+
       var cnv =mongoose.model('cnv', cnvSchema);
 module.exports= cnv;
 

@@ -6,8 +6,11 @@ var Schema = mongoose.Schema;
 // create an export function to encapsulate the model creation
 
     // define schema
-    var rnaseqspljxnquantificationSchema = new Schema({
+    var rowrnaseqspljxnquantificationSchema = new Schema({
         tumor : String,
+        aliquote: String,
+        person_id: String,
+        tissue: String,
         chr : String,
         start : String,
         end : String,
@@ -15,7 +18,11 @@ var Schema = mongoose.Schema;
         raw_counts : Number,
         inner_left : Number,
         inner_right : Number
-
     });
+
+    var rnaseqspljxnquantificationSchema = new Schema({
+       fields: [rowrnaseqspljxnquantificationSchema]
+    });
+
   var rnaseqspljxnquantification =  mongoose.model('rnaseqspljxnquantification', rnaseqspljxnquantificationSchema);
 module.exports = rnaseqspljxnquantification;

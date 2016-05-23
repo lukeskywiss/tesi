@@ -1,6 +1,6 @@
 
 var database = require('./Database.js');
-var dnaseq = require('./model/dnaseq');
+var dnaseq = require('./model/tumorExperiment/dnaseq');
 
 
 function search(){

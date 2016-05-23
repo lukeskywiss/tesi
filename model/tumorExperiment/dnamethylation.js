@@ -8,8 +8,11 @@ var Schema = mongoose.Schema;
 // create an export function to encapsulate the model creation
 
     // define schema
-    var dnamethylationSchema = new Schema({
+    var rowdnamethylationSchema = new Schema({
         tumor : String,
+        aliquote: String,
+        person_id: String,
+        tissue: String,
         chr : String,
         start : String,
         end : String,
@@ -18,5 +21,12 @@ var Schema = mongoose.Schema;
         beta_value : String,
         gene_symbol : String
     });
+
+var dnamethylationSchema = new Schema({
+   fields:[rowdnamethylationSchema]
+});
+
+
+
     var dnamethylation=mongoose.model('dnamethylation', dnamethylationSchema);
 module.exports= dnamethylation;

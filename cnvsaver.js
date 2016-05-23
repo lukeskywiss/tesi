@@ -1,4 +1,4 @@
-var cnv = require('./model/cnv');
+var cnv = require('./model/tumorExperiment/cnv');
 
 
     module.exports.addcnvtodatabase =function(objtoadd){

@@ -10,18 +10,18 @@ var root2= "bed/brca/rnaseq/gene.quantification";
 var async = require('async');
 require('./Genome.js')();
 
-require('./model/dnaseq.js')();
-require('./model/cnv.js')();
-require('./model/dnamethylation.js')();
-require('./model/mirnaseq/mirnaseqisoformquantification.js')();
-require('./model/mirnaseq/mirnaseqmirnaquantification.js')();
-require('./model/rnaseq/rnaseqexonquantification.js')();
-require('./model/rnaseq/rnaseqgenequantification.js')();
-require('./model/rnaseq/rnaseqspljxnquantification.js')();
-require('./model/rnaseqv2/rnaseqv2exonquantification.js')();
-require('./model/rnaseqv2/rnaseqv2genequantification.js')();
-require('./model/rnaseqv2/rnaseqv2isoformquantification.js')();
-require('./model/rnaseqv2/rnaseqv2spljxnquantification.js')();
+require('./model/tumorExperiment/dnaseq.js')();
+require('./model/tumorExperiment/cnv.js')();
+require('./model/tumorExperiment/dnamethylation.js')();
+require('./model/tumorExperiment/mirnaseq/mirnaseqisoformquantification.js')();
+require('./model/tumorExperiment/mirnaseq/mirnaseqmirnaquantification.js')();
+require('./model/tumorExperiment/rnaseq/rnaseqexonquantification.js')();
+require('./model/tumorExperiment/rnaseq/rnaseqgenequantification.js')();
+require('./model/tumorExperiment/rnaseq/rnaseqspljxnquantification.js')();
+require('./model/tumorExperiment/rnaseqv2/rnaseqv2exonquantification.js')();
+require('./model/tumorExperiment/rnaseqv2/rnaseqv2genequantification.js')();
+require('./model/tumorExperiment/rnaseqv2/rnaseqv2isoformquantification.js')();
+require('./model/tumorExperiment/rnaseqv2/rnaseqv2spljxnquantification.js')();
 
 
 
